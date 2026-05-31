@@ -164,6 +164,78 @@ select.inp{cursor:pointer;}
 .supply-tag button { border: none; background: none; color: var(--hint); cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
 .supply-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 
+/* MOOD BOARD */
+.palette-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+.swatch { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.swatch-circle { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.08); box-shadow: var(--shadow); }
+.swatch-label { font-size: 9px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 4px; }
+.mb-card { background: var(--cream); border-radius: var(--radius); border: 1px solid var(--terra-m); overflow: hidden; box-shadow: var(--shadow); transition: box-shadow .15s, transform .1s; animation: fadeIn .25s ease; }
+.mb-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.mb-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--parch-d); }
+.mb-img-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 32px; background: var(--parch-d); color: var(--hint); }
+.mb-card-body { padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mb-card-title { font-size: 12px; font-weight: 500; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mb-card-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.upload-zone { border: 2px dashed var(--terra-m); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; margin-bottom: 16px; }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--terra); background: var(--terra-l); }
+.upload-zone-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-zone p { font-size: 13px; color: var(--muted); font-family: 'Playfair Display', serif; font-style: italic; }
+.upload-zone small { font-size: 11px; color: var(--hint); margin-top: 4px; display: block; }
+.upload-progress { background: var(--terra-l); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 14px; font-size: 13px; color: var(--terra); display: none; }
+.upload-progress.show { display: block; }
+
+/* MOODBOARD ENHANCEMENTS */
+.mb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 4px; }
+.mb-card { background: var(--cream); border-radius: var(--radius); border: 1px solid var(--terra-m); overflow: visible; box-shadow: var(--shadow); transition: box-shadow .15s, transform .1s; animation: fadeIn .25s ease; position: relative; }
+.mb-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.mb-card.pinned { border: 2px solid var(--gold); }
+.mb-pin-badge { position: absolute; top: -8px; right: -8px; background: var(--gold); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: var(--shadow); z-index: 2; }
+.mb-img-wrap { position: relative; cursor: zoom-in; overflow: hidden; border-radius: var(--radius) var(--radius) 0 0; }
+.mb-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--parch-d); transition: transform .3s ease; }
+.mb-img:hover { transform: scale(1.03); }
+.mb-img-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 32px; background: var(--parch-d); color: var(--hint); }
+.mb-section-badge { position: absolute; top: 8px; left: 8px; background: rgba(44,36,22,.65); color: white; font-size: 9px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; backdrop-filter: blur(4px); }
+.mb-card-body { padding: 10px 12px 6px; }
+.mb-card-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.mb-card-caption { font-size: 11px; color: var(--muted); font-style: italic; font-family: 'Playfair Display', serif; margin-bottom: 6px; line-height: 1.4; }
+.mb-card-link { font-size: 11px; color: var(--terra); text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 6px; }
+.mb-card-link:hover { text-decoration: underline; }
+.mb-card-footer { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px 10px; border-top: 1px solid var(--terra-m); margin-top: 4px; }
+.reactions { display: flex; gap: 6px; }
+.reaction-btn { border: none; background: none; cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 6px; transition: background .15s; display: flex; align-items: center; gap: 3px; }
+.reaction-btn:hover { background: var(--parch-d); }
+.reaction-btn.reacted { background: var(--terra-l); }
+.reaction-count { font-size: 10px; color: var(--muted); font-weight: 500; }
+.mb-actions { display: flex; gap: 4px; }
+.mb-comments-section { padding: 0 12px 10px; }
+.mb-comments-toggle { font-size: 11px; color: var(--terra); cursor: pointer; background: none; border: none; font-family: inherit; padding: 0; margin-bottom: 6px; }
+.mb-comments-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.mb-comment { background: var(--parch-d); border-radius: var(--radius-sm); padding: 7px 10px; }
+.mb-comment-author { font-size: 10px; font-weight: 500; color: var(--terra); margin-bottom: 2px; }
+.mb-comment-text { font-size: 12px; color: var(--ink); line-height: 1.4; }
+.mb-comment-input-row { display: flex; gap: 6px; }
+.mb-comment-input-row input { flex: 1; padding: 7px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--terra-m); font-size: 12px; font-family: inherit; outline: none; background: var(--parch); color: var(--ink); }
+.mb-comment-input-row input:focus { border-color: var(--terra); }
+.mb-comment-input-row button { padding: 7px 12px; border-radius: var(--radius-sm); border: none; background: var(--terra); color: white; font-size: 12px; cursor: pointer; }
+
+/* SECTION TABS */
+.section-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.section-tab { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--terra-m); font-size: 11px; font-weight: 500; cursor: pointer; background: var(--cream); color: var(--muted); transition: all .15s; letter-spacing: .04em; }
+.section-tab.active { background: var(--terra); color: white; border-color: var(--terra); }
+
+/* DRAG */
+.mb-card.dragging { opacity: .5; transform: scale(.97); }
+.mb-card.drag-over { border: 2px dashed var(--terra); }
+
+/* LIGHTBOX */
+.lightbox { display: none; position: fixed; inset: 0; background: rgba(20,15,8,.92); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+.lightbox.open { display: flex; }
+.lightbox-inner { max-width: 90vw; max-height: 90vh; position: relative; }
+.lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: var(--radius); display: block; }
+.lightbox-caption { color: rgba(255,255,255,.8); font-size: 14px; font-family: 'Playfair Display', serif; font-style: italic; text-align: center; margin-top: 10px; }
+.lightbox-close { position: absolute; top: -14px; right: -14px; background: var(--terra); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
 /* RESPONSIVE */
 @media(max-width:480px){
   .stats-row,.food-stats{grid-template-columns:repeat(3,1fr);}
@@ -287,6 +359,51 @@ select.inp{cursor:pointer;}
   <div id="game-list"></div>
 </div>
 
+<!-- MOOD BOARD TAB -->
+<div id="tab-moodboard" class="wrap" style="display:none">
+  <!-- Palette -->
+  <div class="palette-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+    <div class="swatch"><div class="swatch-circle" style="background:#f5f0e8"></div><div class="swatch-label">Cream</div></div>
+    <div class="swatch"><div class="swatch-circle" style="background:#8a9e72"></div><div class="swatch-label">Sage</div></div>
+    <div class="swatch"><div class="swatch-circle" style="background:#c1572a"></div><div class="swatch-label">Terracotta</div></div>
+    <div class="swatch"><div class="swatch-circle" style="background:#4a5e35"></div><div class="swatch-label">Olive</div></div>
+    <div class="swatch"><div class="swatch-circle" style="background:#e8c84a"></div><div class="swatch-label">Butter</div></div>
+  </div>
+
+  <!-- Section filter tabs -->
+  <div class="section-tabs" id="section-tabs"></div>
+
+  <!-- Upload zone -->
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+    <div class="upload-zone-icon">🖼️</div>
+    <p>Tap to upload an image</p>
+    <small>JPG, PNG, WEBP · drag & drop also works</small>
+  </div>
+  <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFileSelect(event)">
+
+  <!-- Upload form -->
+  <div class="form-panel" id="mb-upload-form" style="display:none">
+    <h3 id="mb-form-heading">Add image details</h3>
+    <div class="form-grid">
+      <input class="inp" id="mb-title-inp" placeholder="Title e.g. Table setting *">
+      <input class="inp" id="mb-caption-inp" placeholder="Caption or note (optional)">
+      <select class="inp" id="mb-section-inp">
+        <option value="">No section</option>
+        <option>Decor</option><option>Food Styling</option><option>Outfits</option><option>Florals</option><option>Venue</option>
+      </select>
+      <input class="inp" id="mb-link-inp" placeholder="Link (optional) e.g. https://etsy.com/...">
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-terra" style="flex:1" id="mb-upload-btn" onclick="confirmUpload()">Add to Board</button>
+      <button class="btn btn-muted" onclick="cancelUpload()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="upload-progress" id="upload-progress">Uploading image…</div>
+  <div class="mb-grid" id="mb-grid"></div>
+  <div class="foot" id="mb-foot" style="display:none"><span class="foot-ornament">🌿</span>Your mood board</div>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-tab active" id="nav-guests" onclick="switchTab('guests')">
@@ -300,6 +417,10 @@ select.inp{cursor:pointer;}
   <button class="nav-tab" id="nav-games" onclick="switchTab('games')">
     <span class="nav-icon">🎉</span>
     <span class="nav-label">Games</span>
+  </button>
+  <button class="nav-tab" id="nav-moodboard" onclick="switchTab('moodboard')">
+    <span class="nav-icon">🎨</span>
+    <span class="nav-label">Board</span>
   </button>
 </nav>
 
@@ -328,6 +449,15 @@ select.inp{cursor:pointer;}
   </div>
 </div>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -341,7 +471,7 @@ const GAME_STATUSES = ['Not Started','Ready','Done'];
 const CAT_ICONS = {Appetizers:'🫒',Mains:'🍝',Sides:'🥗',Desserts:'🍮',Drinks:'🍷'};
 const GAME_ICONS = ['🎲','🎯','🎪','🎀','🎊','🎈'];
 
-let guests=[], food=[], games=[];
+let guests=[], food=[], games=[], moodboard=[];
 let editingGuest=null, editingFood=null, editingGame=null;
 let activeGuestFilter='All', activeFoodFilter='All';
 let currentTab='guests';
@@ -362,7 +492,7 @@ async function db(method,path,body){
 // ── TABS ──────────────────────────────────────────
 function switchTab(tab) {
   currentTab=tab;
-  ['guests','food','games'].forEach(t=>{
+  ['guests','food','games','moodboard'].forEach(t=>{
     document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
     document.getElementById('nav-'+t).classList.toggle('active', t===tab);
   });
@@ -373,12 +503,16 @@ async function initApp() {
   showLoading('Loading your shower planner…');
   await promptUser();
   try {
-    [guests, food, games] = await Promise.all([
+    let moodboardData;
+    [guests, food, games, moodboardData] = await Promise.all([
       db('GET','guests?order=name.asc'),
       db('GET','food?order=category.asc,name.asc'),
       db('GET','games?order=name.asc'),
+      db('GET','moodboard?order=position.asc'),
     ]);
+    moodboard = moodboardData || [];
     setSync('ok','Connected · syncs in real time');
+    await loadComments();
     hideLoading();
     switchTab('guests');
     render();
@@ -394,15 +528,17 @@ function startPolling() {
   if(pollingInterval) clearInterval(pollingInterval);
   pollingInterval=setInterval(async()=>{
     try {
-      const [g,f,gm]=await Promise.all([
+      const [g,f,gm,mb]=await Promise.all([
         db('GET','guests?order=name.asc'),
         db('GET','food?order=category.asc,name.asc'),
         db('GET','games?order=name.asc'),
+        db('GET','moodboard?order=position.asc'),
       ]);
       let changed=false;
       if(JSON.stringify(g)!==JSON.stringify(guests)){guests=g;changed=true;}
       if(JSON.stringify(f)!==JSON.stringify(food)){food=f;changed=true;}
       if(JSON.stringify(gm)!==JSON.stringify(games)){games=gm;changed=true;}
+      if(JSON.stringify(mb)!==JSON.stringify(moodboard)){moodboard=mb;changed=true;}
       if(changed) render();
       setSync('ok','Connected · syncs in real time');
     } catch(e){setSync('err','Connection lost');}
@@ -412,17 +548,20 @@ function startPolling() {
 async function refreshAll() {
   setSync('busy','Refreshing…');
   try {
-    [guests,food,games]=await Promise.all([
+    let mbRefresh;
+    [guests,food,games,mbRefresh]=await Promise.all([
       db('GET','guests?order=name.asc'),
       db('GET','food?order=category.asc,name.asc'),
       db('GET','games?order=name.asc'),
+      db('GET','moodboard?order=position.asc'),
     ]);
+    moodboard = mbRefresh || [];
     render(); showToast('Refreshed ✓');
     setSync('ok','Connected · syncs in real time');
   } catch(e){showToast('Refresh failed');setSync('err','Connection lost');}
 }
 
-function render(){renderGuests();renderFood();renderGames();}
+function render(){renderGuests();renderFood();renderGames();renderMoodboard();}
 
 // ── GUESTS ────────────────────────────────────────
 function renderGuests() {
@@ -749,6 +888,302 @@ async function changeGameStatus(id,status){
   catch(e){showToast('Update failed');}
 }
 
+// ── MOOD BOARD ────────────────────────────────────
+const SB_STORAGE = 'https://yvetxupykoabqpykqtzr.supabase.co/storage/v1';
+const MB_SECTIONS = ['Decor','Food Styling','Outfits','Florals','Venue'];
+const REACTIONS = ['❤️','👍','😍'];
+let pendingFiles = [], pendingFileIdx = 0;
+let activeMbSection = 'All';
+let mbComments = {};
+let dragSrcId = null;
+
+function renderMoodboard() {
+  renderSectionTabs();
+  const grid = document.getElementById('mb-grid');
+  const foot = document.getElementById('mb-foot');
+  if (!grid) return;
+  const filtered = activeMbSection === 'All' ? moodboard
+    : activeMbSection === '⭐ Pinned' ? moodboard.filter(m => m.pinned)
+    : moodboard.filter(m => m.section === activeMbSection);
+  // Pinned first
+  const sorted = [...filtered].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0) || a.position-b.position);
+  if (!sorted.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🖼️</div><p>${moodboard.length===0?'Upload your first image!':'No images in this section.'}</p></div>`;
+    if (foot) foot.style.display = 'none';
+    return;
+  }
+  if (foot) foot.style.display = 'block';
+  grid.innerHTML = sorted.map(item => {
+    const reactions = item.reactions || {'❤️':[],'👍':[],'😍':[]};
+    const comments = mbComments[item.id] || [];
+    const user = currentUser();
+    return `
+    <div class="mb-card${item.pinned?' pinned':''}" draggable="true"
+      ondragstart="mbDragStart(event,'${item.id}')"
+      ondragover="mbDragOver(event,'${item.id}')"
+      ondrop="mbDrop(event,'${item.id}')"
+      ondragleave="mbDragLeave(event)">
+      ${item.pinned?'<div class="mb-pin-badge">⭐</div>':''}
+      <div class="mb-img-wrap" onclick="openLightbox('${item.id}')">
+        <img class="mb-img" src="${esc(item.url)}" alt="${esc(item.title)}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="mb-img-placeholder" style="display:none">🖼️</div>
+        ${item.section?`<div class="mb-section-badge">${esc(item.section)}</div>`:''}
+      </div>
+      <div class="mb-card-body">
+        <div class="mb-card-title">${esc(item.title)||'Untitled'}</div>
+        ${item.caption?`<div class="mb-card-caption">${esc(item.caption)}</div>`:''}
+        ${item.link?`<a class="mb-card-link" href="${esc(item.link)}" target="_blank" onclick="event.stopPropagation()">🔗 View link</a>`:''}
+      </div>
+      <div class="mb-card-footer">
+        <div class="reactions">
+          ${REACTIONS.map(r => {
+            const users = reactions[r]||[];
+            const reacted = users.includes(user);
+            return `<button class="reaction-btn${reacted?' reacted':''}" onclick="toggleReaction('${item.id}','${r}')">
+              ${r}<span class="reaction-count">${users.length||''}</span>
+            </button>`;
+          }).join('')}
+        </div>
+        <div class="mb-actions">
+          <button class="icon-btn" style="background:var(--gold-l);color:var(--gold)" onclick="togglePin('${item.id}')" title="${item.pinned?'Unpin':'Pin'}">⭐</button>
+          <button class="icon-btn icon-btn-edit" onclick="openMbEdit('${item.id}')">✏️</button>
+          <button class="icon-btn icon-btn-del" onclick="deleteMoodboardItem('${item.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="mb-comments-section">
+        <button class="mb-comments-toggle" onclick="toggleComments('${item.id}')">
+          💬 ${comments.length} comment${comments.length!==1?'s':''}
+        </button>
+        <div id="comments-${item.id}" style="display:none">
+          <div class="mb-comments-list">
+            ${comments.map(c=>`
+              <div class="mb-comment">
+                <div class="mb-comment-author">${esc(c.author)}</div>
+                <div class="mb-comment-text">${esc(c.comment)}</div>
+              </div>`).join('')}
+          </div>
+          <div class="mb-comment-input-row">
+            <input placeholder="Add a comment…" id="comment-inp-${item.id}" onkeydown="if(event.key==='Enter')submitComment('${item.id}')">
+            <button onclick="submitComment('${item.id}')">→</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSectionTabs() {
+  const tabs = document.getElementById('section-tabs');
+  if (!tabs) return;
+  const all = ['All','⭐ Pinned',...MB_SECTIONS];
+  tabs.innerHTML = all.map(s=>`
+    <div class="section-tab${activeMbSection===s?' active':''}" onclick="setMbSection('${s}')">${s}</div>`).join('');
+}
+
+function setMbSection(s) { activeMbSection=s; renderMoodboard(); }
+
+// Lightbox
+function openLightbox(id) {
+  const item = moodboard.find(m=>m.id===id);
+  if (!item) return;
+  document.getElementById('lightbox-img').src = item.url;
+  document.getElementById('lightbox-caption').textContent = [item.title, item.caption].filter(Boolean).join(' — ');
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+// Reactions
+async function toggleReaction(id, emoji) {
+  const item = moodboard.find(m=>m.id===id);
+  if (!item) return;
+  const user = currentUser();
+  const reactions = item.reactions ? {...item.reactions} : {'❤️':[],'👍':[],'😍':[]};
+  if (!reactions[emoji]) reactions[emoji]=[];
+  const idx = reactions[emoji].indexOf(user);
+  if (idx>-1) reactions[emoji].splice(idx,1);
+  else reactions[emoji].push(user);
+  moodboard = moodboard.map(m=>m.id===id?{...m,reactions}:m);
+  renderMoodboard();
+  try { await db('PATCH',`moodboard?id=eq.${id}`,{reactions}); }
+  catch(e) { showToast('Update failed'); }
+}
+
+// Pin
+async function togglePin(id) {
+  const item = moodboard.find(m=>m.id===id);
+  if (!item) return;
+  const pinned = !item.pinned;
+  moodboard = moodboard.map(m=>m.id===id?{...m,pinned}:m);
+  renderMoodboard();
+  try { await db('PATCH',`moodboard?id=eq.${id}`,{pinned}); showToast(pinned?'Pinned ⭐':'Unpinned'); }
+  catch(e) { showToast('Update failed'); }
+}
+
+// Comments
+async function loadComments() {
+  try {
+    const all = await db('GET','moodboard_comments?order=created_at.asc');
+    mbComments = {};
+    all.forEach(c=>{ if(!mbComments[c.image_id]) mbComments[c.image_id]=[]; mbComments[c.image_id].push(c); });
+  } catch(e) {}
+}
+function toggleComments(id) {
+  const el = document.getElementById('comments-'+id);
+  if (!el) return;
+  el.style.display = el.style.display==='none'?'block':'none';
+  if (el.style.display==='block') setTimeout(()=>document.getElementById('comment-inp-'+id)?.focus(),60);
+}
+async function submitComment(id) {
+  const inp = document.getElementById('comment-inp-'+id);
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value='';
+  const c = { id:'c_'+Date.now(), image_id:id, author:currentUser(), comment:text, created_at:new Date().toISOString() };
+  if (!mbComments[id]) mbComments[id]=[];
+  mbComments[id].push(c);
+  renderMoodboard();
+  // Re-open comment section
+  setTimeout(()=>{ const el=document.getElementById('comments-'+id); if(el) el.style.display='block'; },50);
+  try { await db('POST','moodboard_comments',c); }
+  catch(e) { showToast('Comment failed'); }
+}
+
+// Edit existing image details
+let editingMbId = null;
+function openMbEdit(id) {
+  const item = moodboard.find(m=>m.id===id);
+  if (!item) return;
+  editingMbId = id;
+  document.getElementById('mb-form-heading').textContent = 'Edit details';
+  document.getElementById('mb-upload-btn').textContent = 'Save Changes';
+  document.getElementById('mb-upload-btn').onclick = saveMbEdit;
+  document.getElementById('mb-title-inp').value = item.title||'';
+  document.getElementById('mb-caption-inp').value = item.caption||'';
+  document.getElementById('mb-section-inp').value = item.section||'';
+  document.getElementById('mb-link-inp').value = item.link||'';
+  document.getElementById('mb-upload-form').style.display = 'block';
+  document.getElementById('upload-zone').style.display = 'none';
+  setTimeout(()=>document.getElementById('mb-title-inp').focus(),60);
+}
+async function saveMbEdit() {
+  const id = editingMbId;
+  const updates = {
+    title: document.getElementById('mb-title-inp').value.trim()||'Untitled',
+    caption: document.getElementById('mb-caption-inp').value.trim(),
+    section: document.getElementById('mb-section-inp').value,
+    link: document.getElementById('mb-link-inp').value.trim(),
+    updated_by: currentUser(), updated_at: new Date().toISOString()
+  };
+  document.getElementById('mb-upload-form').style.display='none';
+  document.getElementById('upload-zone').style.display='block';
+  editingMbId=null;
+  document.getElementById('mb-upload-btn').textContent='Add to Board';
+  document.getElementById('mb-upload-btn').onclick=confirmUpload;
+  try {
+    await db('PATCH',`moodboard?id=eq.${id}`,updates);
+    moodboard = await db('GET','moodboard?order=position.asc');
+    renderMoodboard(); showToast('Updated ✓');
+  } catch(e) { showToast('Save failed'); }
+}
+
+// Drag to reorder
+function mbDragStart(e,id) { dragSrcId=id; e.currentTarget.classList.add('dragging'); }
+function mbDragOver(e,id) { e.preventDefault(); if(id!==dragSrcId) e.currentTarget.classList.add('drag-over'); }
+function mbDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+async function mbDrop(e,targetId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSrcId||dragSrcId===targetId) return;
+  const srcIdx = moodboard.findIndex(m=>m.id===dragSrcId);
+  const tgtIdx = moodboard.findIndex(m=>m.id===targetId);
+  const reordered = [...moodboard];
+  const [moved] = reordered.splice(srcIdx,1);
+  reordered.splice(tgtIdx,0,moved);
+  reordered.forEach((m,i)=>m.position=i);
+  moodboard = reordered;
+  renderMoodboard();
+  dragSrcId=null;
+  try {
+    await Promise.all(moodboard.map((m,i)=>db('PATCH',`moodboard?id=eq.${m.id}`,{position:i})));
+  } catch(e) { showToast('Reorder failed'); }
+}
+
+// Upload flow
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('dragover'); }
+function handleDrop(e) {
+  e.preventDefault(); document.getElementById('upload-zone').classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+  if (files.length) startUploadFlow(files);
+}
+function handleFileSelect(e) {
+  const files = Array.from(e.target.files);
+  if (files.length) startUploadFlow(files);
+  e.target.value='';
+}
+function startUploadFlow(files) { pendingFiles=files; pendingFileIdx=0; promptNextFile(); }
+function promptNextFile() {
+  if (pendingFileIdx>=pendingFiles.length) { pendingFiles=[]; return; }
+  editingMbId=null;
+  document.getElementById('mb-form-heading').textContent='Add image details';
+  document.getElementById('mb-upload-btn').textContent='Add to Board';
+  document.getElementById('mb-upload-btn').onclick=confirmUpload;
+  document.getElementById('mb-title-inp').value='';
+  document.getElementById('mb-caption-inp').value='';
+  document.getElementById('mb-section-inp').value='';
+  document.getElementById('mb-link-inp').value='';
+  document.getElementById('mb-upload-form').style.display='block';
+  document.getElementById('upload-zone').style.display='none';
+  setTimeout(()=>document.getElementById('mb-title-inp').focus(),60);
+}
+function cancelUpload() {
+  pendingFiles=[]; pendingFileIdx=0; editingMbId=null;
+  document.getElementById('mb-upload-form').style.display='none';
+  document.getElementById('upload-zone').style.display='block';
+  document.getElementById('mb-upload-btn').onclick=confirmUpload;
+}
+async function confirmUpload() {
+  const title = document.getElementById('mb-title-inp').value.trim()||'Untitled';
+  const caption = document.getElementById('mb-caption-inp').value.trim();
+  const section = document.getElementById('mb-section-inp').value;
+  const link = document.getElementById('mb-link-inp').value.trim();
+  const file = pendingFiles[pendingFileIdx];
+  document.getElementById('mb-upload-form').style.display='none';
+  const prog = document.getElementById('upload-progress');
+  prog.textContent=`Uploading "${title}"…`;
+  prog.classList.add('show');
+  setSync('busy','Uploading…');
+  try {
+    const ext = file.name.split('.').pop();
+    const filename = `img_${Date.now()}.${ext}`;
+    const uploadRes = await fetch(`${SB_STORAGE}/object/moodboard/${filename}`,{
+      method:'POST', headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type}, body:file
+    });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    const publicUrl = `${SB_STORAGE}/object/public/moodboard/${filename}`;
+    const item = {id:'mb_'+Date.now(),title,caption,section,link,url:publicUrl,position:moodboard.length,pinned:false,reactions:{'❤️':[],'👍':[],'😍':[]},updated_by:currentUser(),updated_at:new Date().toISOString()};
+    await db('POST','moodboard',item);
+    moodboard = await db('GET','moodboard?order=position.asc');
+    renderMoodboard(); showToast(`"${title}" added ✓`);
+    setSync('ok','Connected · syncs in real time');
+  } catch(e) { showToast('Upload failed — '+e.message); setSync('err','Upload failed'); }
+  prog.classList.remove('show');
+  document.getElementById('upload-zone').style.display='block';
+  pendingFileIdx++;
+  if (pendingFileIdx<pendingFiles.length) setTimeout(promptNextFile,300);
+  else pendingFiles=[];
+}
+async function deleteMoodboardItem(id) {
+  if (!confirm('Remove this image?')) return;
+  try {
+    await db('DELETE',`moodboard?id=eq.${id}`);
+    moodboard = await db('GET','moodboard?order=position.asc');
+    renderMoodboard(); showToast('Image removed');
+  } catch(e) { showToast('Delete failed'); }
+}
+
 // ── SHARE ─────────────────────────────────────────
 function openShare(){document.getElementById('share-text').value=window.location.href;document.getElementById('share-modal').classList.add('open');}
 function closeShare(){document.getElementById('share-modal').classList.remove('open');}
@@ -756,6 +1191,7 @@ function copyShare(){const t=document.getElementById('share-text');t.select();na
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.activeElement.id==='gmf-supply-inp'){addSupplyTag();return;}
+  if(e.key==='Enter'&&document.activeElement.id==='mb-title-inp'){confirmUpload();return;}
   if(e.key==='Escape'){
     closeGuestForm();closeFoodForm();closeGameForm();closeShare();
   }
