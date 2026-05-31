@@ -172,37 +172,6 @@ const SUPABASE_URL = 'https://yvetxupykoabqpykqtzr.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2ZXR4dXB5a29hYnFweWtxdHpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNTczMTcsImV4cCI6MjA5NTgzMzMxN30.99719clcsYoyGyHGtYvslYtPTiYUEbcRzmx11ErFIHU';
 const HEADERS = { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
 const RSVP_OPTS = ['Pending','Yes','No','Maybe'];
-const SEED = [
-  {id:'g_1780261772767',name:'Lourdes Guevara',address:'1774 N Kimbark Lane',city:'Orange',state:'CA',zip:'92866',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261782771',name:'Michelle Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261793001',name:'Flora Rodrigues',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261800144',name:'Esther Garcia',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261815939',name:'Lisette Deveraux + girls',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261826198',name:'Annette Garcia',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261834319',name:'Laura Garcia + girls',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261841934',name:'Bibi Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261848944',name:'Gisella Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780261949803',name:'Denise Goulart + girls',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262007749',name:'Samantha Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262015519',name:'Emily Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262022645',name:'Amanda Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262029172',name:'Natalie Guevara',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262039102',name:'Pamela Morales',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262045131',name:'Catalina Morales',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262053622',name:'Linda Circosta',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262064469',name:'Megha Mehta',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262070362',name:'Bhakti Joshi',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262077878',name:'Harshada Chaundkar',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262083836',name:'Dhwani Mandavia',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262236948',name:'Ankita Upreti',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262244544',name:'Marisol Lopez',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262249571',name:'Kara Fisher',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262256099',name:'Jillian Govea',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262283162',name:'Priscilla Castaneda',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262382386',name:'Ivanna Panova',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-  {id:'g_1780262399952',name:'Olivia S',address:'',city:'',state:'',zip:'',rsvp:'Pending',note:'',updated_by:'Poonam'},
-];
-
 let guests = [];
 let editingId = null;
 let activeFilter = 'All';
@@ -232,14 +201,7 @@ async function initApp() {
   try {
     // Try to fetch from Supabase
     const rows = await db('GET', 'guests?order=name.asc');
-    if (rows.length === 0) {
-      // First time — seed the data
-      showLoading('Setting up your guest list…');
-      await db('POST', 'guests', SEED);
-      guests = await db('GET', 'guests?order=name.asc');
-    } else {
-      guests = rows;
-    }
+    guests = rows;
     setSync('ok', 'Connected · syncs in real time');
     hideLoading();
     render();
