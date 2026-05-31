@@ -415,24 +415,6 @@ body::before {
   </div>
 </header>
 
-<!-- Setup -->
-<div id="setup-screen">
-  <div class="setup-card">
-    <div class="laurel">🏛️</div>
-    <h2>Welcome, Poonam</h2>
-    
-    <p>This app saves your guest list to Google Sheets so you and your co-host can both edit it in real time. You only need to set this up once.</p>
-    <ol class="setup-steps">
-      <li>Go to <strong>Google Sheets</strong> and create a new spreadsheet</li>
-      <li>Rename the first tab to <strong>Guests</strong></li>
-      <li>Copy the Sheet ID from the URL — the long string between <code>/d/</code> and <code>/edit</code></li>
-      <li>Paste it below and click <em>Connect</em></li>
-    </ol>
-    <label class="inp-label" for="sheet-id-input">Google Sheet ID</label>
-    <input class="inp" id="sheet-id-input" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
-    <button class="btn btn-terra" style="width:100%;padding:13px" onclick="connectSheet()">Connect My Sheet →</button>
-    <p style="margin-top:14px;font-size:11px;color:var(--hint)">Your Sheet ID is saved locally — just reload to pick up where you left off.</p>
-  </div>
 </div>
 
 <!-- App -->
@@ -493,12 +475,10 @@ body::before {
 <div id="toast"></div>
 
 <script>
-const SHEET_KEY = 'roman-shower-sheet-id';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZe7YW_orfBd9czLQUqZBAeUOoYvOEyRc2DLEqKcOLkVZgGHwlb6EkKofzEF3Y1NY/exec';
 const RSVP_OPTS = ['Pending','Yes','No','Maybe'];
-const HEADER = ['id','name','address','city','state','zip','rsvp','note','updatedBy','updatedAt'];
 
 let guests = [];
-let sheetId = '';
 let editingId = null;
 let activeFilter = 'All';
 let pollingInterval = null;
@@ -519,48 +499,20 @@ function showLoading(msg){
 }
 function hideLoading(){ document.getElementById('loading-overlay').classList.add('hidden'); }
 
-async function callSheetsAPI(instruction) {
+async function callScript(params) {
   setSync('busy','Syncing…');
+  const url = new URL(SCRIPT_URL);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : v));
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: `You are a Google Sheets data manager with access to Google Drive MCP tools.
-Spreadsheet ID: ${sheetId}
-Sheet name: "Guests"
-Row 1 is the header: id,name,address,city,state,zip,rsvp,note,updatedBy,updatedAt
-ONLY respond with valid JSON. No markdown, no explanation, no code fences.
-For reads: { "guests": [ {id,name,address,city,state,zip,rsvp,note,updatedBy,updatedAt}, ... ] }
-For writes: perform the operation, then return { "ok": true, "guests": [ ...all current rows... ] }
-For init: write the header if missing, return { "ok": true, "guests": [] }
-Empty cells = empty string. Dates are ISO strings.`,
-        messages: [{ role: 'user', content: instruction }],
-        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
-      })
-    });
+    const res = await fetch(url.toString(), { method: 'GET' });
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message || 'API error');
-    const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('No JSON in response');
-    const parsed = JSON.parse(match[0]);
-    setSync('ok', 'Synced');
-    return parsed;
+    if (data.error) throw new Error(data.error);
+    setSync('ok','Synced');
+    return data;
   } catch(e) {
-    setSync('err', 'Sync failed');
+    setSync('err','Sync failed');
     throw e;
   }
-}
-
-async function connectSheet() {
-  const id = document.getElementById('sheet-id-input').value.trim();
-  if (!id) { showToast('Please paste your Sheet ID'); return; }
-  sheetId = id;
-  localStorage.setItem(SHEET_KEY, sheetId);
-  await initApp();
 }
 
 async function initApp() {
@@ -568,9 +520,7 @@ async function initApp() {
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'none';
   try {
-    const result = await callSheetsAPI(
-      `Initialize: check if row 1 has headers: ${HEADER.join(',')}. If not, write them. Read all data rows and return them.`
-    );
+    const result = await callScript({ action: 'init' });
     guests = result.guests || [];
     document.getElementById('app-screen').style.display = 'block';
     render();
@@ -578,9 +528,11 @@ async function initApp() {
     hideLoading();
   } catch(e) {
     hideLoading();
-    document.getElementById('setup-screen').style.display = 'block';
-    showToast('Could not connect — check your Sheet ID and Google Drive access', 4500);
-    setSync('err', 'Not connected');
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    render();
+    showToast('Could not connect — check your internet connection', 4500);
+    setSync('err','Not connected');
   }
 }
 
@@ -588,7 +540,7 @@ function startPolling() {
   if (pollingInterval) clearInterval(pollingInterval);
   pollingInterval = setInterval(async () => {
     try {
-      const result = await callSheetsAPI('Read all data rows from the Guests sheet and return them.');
+      const result = await callScript({ action: 'read' });
       const incoming = result.guests || [];
       if (JSON.stringify(incoming) !== JSON.stringify(guests)) {
         guests = incoming; render();
@@ -600,10 +552,10 @@ function startPolling() {
 async function refreshData() {
   showLoading('Refreshing guest list…');
   try {
-    const result = await callSheetsAPI('Read all data rows from the Guests sheet and return them.');
+    const result = await callScript({ action: 'read' });
     guests = result.guests || []; render(); hideLoading();
     showToast('Guest list refreshed ✓');
-  } catch(e) { hideLoading(); showToast('Refresh failed'); }
+  } catch(e) { hideLoading(); showToast('Refresh failed — check your connection'); }
 }
 
 async function saveGuest() {
@@ -621,15 +573,13 @@ async function saveGuest() {
   };
   if (editingId) { guests = guests.map(x => x.id===editingId ? g : x); }
   else { guests = [...guests, g]; }
+  const wasEditing = editingId;
   closeForm(); render();
-  showLoading(editingId ? 'Saving changes…' : 'Adding guest…');
+  showLoading(wasEditing ? 'Saving changes…' : 'Adding guest…');
   try {
-    const action = editingId
-      ? `Find the row where column A equals "${g.id}" and update all columns with: ${HEADER.map(h=>JSON.stringify(g[h]||'')).join(',')}`
-      : `Append a new row with these values: ${HEADER.map(h=>JSON.stringify(g[h]||'')).join(',')}`;
-    const result = await callSheetsAPI(`${action}. Then return all rows.`);
+    const result = await callScript({ action: 'upsert', guest: g });
     guests = result.guests || guests; render(); hideLoading();
-    showToast(editingId ? `${name} aggiornato ✓` : `Benvenuto, ${name}! ✓`);
+    showToast(wasEditing ? `${name} updated ✓` : `${name} added ✓`);
   } catch(e) { hideLoading(); showToast('Save failed — please retry'); }
   editingId = null;
 }
@@ -640,27 +590,29 @@ async function deleteGuest(id) {
   guests = guests.filter(g => g.id!==id); render();
   showLoading('Removing…');
   try {
-    const result = await callSheetsAPI(`Delete the row where column A equals "${id}". Return all remaining rows.`);
+    const result = await callScript({ action: 'delete', id });
     guests = result.guests || guests; render(); hideLoading();
     showToast(`${name} removed`);
-  } catch(e) { hideLoading(); showToast('Delete failed'); }
+  } catch(e) { hideLoading(); showToast('Delete failed — please refresh'); }
 }
 
 async function changeRsvp(id, rsvp) {
-  const name = (guests.find(g=>g.id===id)||{}).name||'';
-  guests = guests.map(g => g.id===id ? {...g, rsvp, updatedBy:'Poonam', updatedAt:new Date().toISOString()} : g);
+  const guest = guests.find(g=>g.id===id);
+  if (!guest) return;
+  const updated = {...guest, rsvp, updatedBy:'Poonam', updatedAt:new Date().toISOString()};
+  guests = guests.map(g => g.id===id ? updated : g);
   render();
   try {
-    await callSheetsAPI(`Find the row where column A equals "${id}". Update column G to "${rsvp}", column I to "Poonam", column J to "${new Date().toISOString()}". Return all rows.`);
-    showToast(`${name} → ${rsvp}`);
-  } catch(e) { showToast('RSVP update failed'); }
+    await callScript({ action: 'upsert', guest: updated });
+    showToast(`${guest.name} → ${rsvp}`);
+  } catch(e) { showToast('RSVP update failed — please refresh'); }
 }
 
 function openForm(id=null) {
   editingId = id;
   const g = id ? guests.find(x=>x.id===id) : null;
   document.getElementById('form-title').textContent = g ? 'Edit Guest' : 'New Guest';
-  document.getElementById('save-btn').textContent = g ? 'Save Changes' : 'Add Guest';
+  document.getElementById('save-btn').textContent = g ? 'Save Changes' : 'Save';
   ['name','addr','city','state','zip','note'].forEach(k => {
     const map = {name:'name',addr:'address',city:'city',state:'state',zip:'zip',note:'note'};
     document.getElementById('f-'+k).value = g?.[map[k]]||'';
@@ -682,7 +634,7 @@ function renderStats() {
   const items = [
     {key:'All',label:'Total',cls:'s-all'},
     {key:'Yes',label:'Coming',cls:'s-yes'},
-    {key:'No',label:'Can\'t Make It',cls:'s-no'},
+    {key:'No',label:"Can't Make It",cls:'s-no'},
     {key:'Maybe',label:'Maybe',cls:'s-maybe'},
     {key:'Pending',label:'Pending',cls:'s-pend'},
   ];
@@ -741,21 +693,14 @@ function renderList() {
 }
 
 function openShare(){
-  document.getElementById('share-text').value=sheetId;
-  document.getElementById('new-sheet-inp').value='';
+  document.getElementById('share-text').value = window.location.href;
   document.getElementById('share-modal').classList.add('open');
 }
 function closeShare(){ document.getElementById('share-modal').classList.remove('open'); }
 function copyShare(){
   const t=document.getElementById('share-text');
   t.select(); navigator.clipboard.writeText(t.value).catch(()=>document.execCommand('copy'));
-  showToast('Sheet ID copied — share it with your co-host 🌸');
-}
-function changeSheet(){
-  const id=document.getElementById('new-sheet-inp').value.trim();
-  if(!id){ showToast('Please enter a Sheet ID'); return; }
-  sheetId=id; localStorage.setItem(SHEET_KEY,sheetId);
-  closeShare(); initApp();
+  showToast('Link copied — share it with your co-host 🌸');
 }
 
 document.addEventListener('keydown', e => {
@@ -763,11 +708,5 @@ document.addEventListener('keydown', e => {
   if(e.key==='Enter' && document.getElementById('form-panel').style.display!=='none' && document.activeElement.id!=='f-note') saveGuest();
 });
 
-(function boot(){
-  const saved = localStorage.getItem(SHEET_KEY);
-  if(saved){ sheetId=saved; initApp(); }
-  else { hideLoading(); document.getElementById('setup-screen').style.display='block'; setSync('','Not connected'); }
-})();
+initApp();
 </script>
-</body>
-</html>
