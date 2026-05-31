@@ -510,9 +510,9 @@ function callScript(params) {
     const script = document.createElement('script');
     const timer = setTimeout(() => {
       cleanup();
-      setSync('err','Sync failed — timeout');
-      reject(new Error('Timeout'));
-    }, 30000);
+      setSync('err','Timed out');
+      reject(new Error('Timeout — check your internet connection'));
+    }, 15000);
 
     function cleanup() {
       clearTimeout(timer);
@@ -522,12 +522,16 @@ function callScript(params) {
 
     window[cbName] = (data) => {
       cleanup();
-      if (data.error) { setSync('err','Sync failed'); reject(new Error(data.error)); return; }
+      if (data.error) { setSync('err','Error: ' + data.error); reject(new Error(data.error)); return; }
       setSync('ok','Synced');
       resolve(data);
     };
 
-    script.onerror = () => { cleanup(); setSync('err','Sync failed'); reject(new Error('Script load error')); };
+    script.onerror = (e) => {
+      cleanup();
+      setSync('err','Could not reach script');
+      reject(new Error('Script load failed — Apps Script may need redeployment'));
+    };
     script.src = url.toString();
     document.head.appendChild(script);
   });
@@ -549,7 +553,13 @@ async function initApp() {
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     render();
-    showToast('Could not connect — check your internet connection', 4500);
+    document.getElementById('guest-list-wrap').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <p style="color:#9b2a2a">Could not connect to your guest list.</p>
+        <p style="font-size:12px; margin-top:8px; color:#7a6a56">` + e.message + `</p>
+        <button class="btn btn-terra" style="margin-top:16px" onclick="initApp()">Try Again</button>
+      </div>`;
     setSync('err','Not connected');
   }
 }
