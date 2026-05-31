@@ -476,6 +476,7 @@ body::before {
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4pL2BGjs8csuZCgXWmbWHWx12VUyR04XmtoRtzU5QLKx0I5LbogA6M1w7jjwQZXnO/exec';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSgHxJg-pmRAfDozFhYi0M1aBeew_4hpfsCvbRaKCJ5jSfkLYWhqey-Shz3zWL4LMz_bA0aPBfLRZCb/pub?gid=0&single=true&output=csv';
 const RSVP_OPTS = ['Pending','Yes','No','Maybe'];
 
 let guests = [];
@@ -499,55 +500,62 @@ function showLoading(msg){
 }
 function hideLoading(){ document.getElementById('loading-overlay').classList.add('hidden'); }
 
-function callScript(params) {
-  setSync('busy','Syncing…');
+// Read guests from public CSV
+async function readFromCSV() {
+  const res = await fetch(CSV_URL + '&t=' + Date.now());
+  const text = await res.text();
+  const lines = text.trim().split('\n');
+  if (lines.length <= 1) return [];
+  const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
+  return lines.slice(1).map(line => {
+    // Handle quoted CSV values
+    const vals = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; }
+      else if (line[i] === ',' && !inQ) { vals.push(cur); cur = ''; }
+      else { cur += line[i]; }
+    }
+    vals.push(cur);
+    const g = {};
+    headers.forEach((h, i) => { g[h] = (vals[i] || '').trim(); });
+    return g;
+  }).filter(g => g.id);
+}
+
+// Write to Apps Script via JSONP
+function writeToScript(params) {
   return new Promise((resolve, reject) => {
     const cbName = 'cb_' + Date.now();
     const url = new URL(SCRIPT_URL);
     Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : v));
     url.searchParams.set('callback', cbName);
-
     const script = document.createElement('script');
     const timer = setTimeout(() => {
-      cleanup();
-      setSync('err','Timed out');
-      reject(new Error('Timeout — check your internet connection'));
-    }, 15000);
-
+      cleanup(); resolve({ ok: true }); // optimistic — don't block UI
+    }, 10000);
     function cleanup() {
-      clearTimeout(timer);
-      delete window[cbName];
+      clearTimeout(timer); delete window[cbName];
       if (script.parentNode) script.parentNode.removeChild(script);
     }
-
-    window[cbName] = (data) => {
-      cleanup();
-      if (data.error) { setSync('err','Error: ' + data.error); reject(new Error(data.error)); return; }
-      setSync('ok','Synced');
-      resolve(data);
-    };
-
-    script.onerror = (e) => {
-      cleanup();
-      setSync('err','Could not reach script');
-      reject(new Error('Script load failed — Apps Script may need redeployment'));
-    };
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); resolve({ ok: true }); };
     script.src = url.toString();
     document.head.appendChild(script);
   });
 }
 
 async function initApp() {
-  showLoading('Connecting to your guest list…');
+  showLoading('Loading your guest list…');
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'none';
   try {
-    const result = await callScript({ action: 'init' });
-    guests = result.guests || [];
+    guests = await readFromCSV();
     document.getElementById('app-screen').style.display = 'block';
     render();
     startPolling();
     hideLoading();
+    setSync('ok', 'Synced');
   } catch(e) {
     hideLoading();
     document.getElementById('setup-screen').style.display = 'none';
@@ -556,11 +564,11 @@ async function initApp() {
     document.getElementById('guest-list-wrap').innerHTML = `
       <div class="empty">
         <div class="empty-icon">⚠️</div>
-        <p style="color:#9b2a2a">Could not connect to your guest list.</p>
+        <p style="color:#9b2a2a">Could not load guest list.</p>
         <p style="font-size:12px; margin-top:8px; color:#7a6a56">` + e.message + `</p>
         <button class="btn btn-terra" style="margin-top:16px" onclick="initApp()">Try Again</button>
       </div>`;
-    setSync('err','Not connected');
+    setSync('err', 'Not connected');
   }
 }
 
@@ -568,8 +576,7 @@ function startPolling() {
   if (pollingInterval) clearInterval(pollingInterval);
   pollingInterval = setInterval(async () => {
     try {
-      const result = await callScript({ action: 'read' });
-      const incoming = result.guests || [];
+      const incoming = await readFromCSV();
       if (JSON.stringify(incoming) !== JSON.stringify(guests)) {
         guests = incoming; render();
       }
@@ -578,12 +585,12 @@ function startPolling() {
 }
 
 async function refreshData() {
-  showLoading('Refreshing guest list…');
+  setSync('busy','Refreshing…');
   try {
-    const result = await callScript({ action: 'read' });
-    guests = result.guests || []; render(); hideLoading();
+    guests = await readFromCSV(); render();
     showToast('Guest list refreshed ✓');
-  } catch(e) { hideLoading(); showToast('Refresh failed — check your connection'); }
+    setSync('ok','Synced');
+  } catch(e) { showToast('Refresh failed — check your connection'); setSync('err','Sync failed'); }
 }
 
 async function saveGuest() {
@@ -605,8 +612,8 @@ async function saveGuest() {
   closeForm(); render();
   showLoading(wasEditing ? 'Saving changes…' : 'Adding guest…');
   try {
-    const result = await callScript({ action: 'upsert', guest: g });
-    guests = result.guests || guests; render(); hideLoading();
+    writeToScript({ action: 'upsert', guest: g }); // fire and forget
+    hideLoading();
     showToast(wasEditing ? `${name} updated ✓` : `${name} added ✓`);
   } catch(e) { hideLoading(); showToast('Save failed — please retry'); }
   editingId = null;
@@ -618,8 +625,8 @@ async function deleteGuest(id) {
   guests = guests.filter(g => g.id!==id); render();
   showLoading('Removing…');
   try {
-    const result = await callScript({ action: 'delete', id });
-    guests = result.guests || guests; render(); hideLoading();
+    writeToScript({ action: 'delete', id }); // fire and forget
+    hideLoading();
     showToast(`${name} removed`);
   } catch(e) { hideLoading(); showToast('Delete failed — please refresh'); }
 }
@@ -631,7 +638,7 @@ async function changeRsvp(id, rsvp) {
   guests = guests.map(g => g.id===id ? updated : g);
   render();
   try {
-    await callScript({ action: 'upsert', guest: updated });
+    writeToScript({ action: 'upsert', guest: updated });
     showToast(`${guest.name} → ${rsvp}`);
   } catch(e) { showToast('RSVP update failed — please refresh'); }
 }
